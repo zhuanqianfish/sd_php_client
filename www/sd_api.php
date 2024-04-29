@@ -13,6 +13,7 @@ header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token');
 require_once("config.php");
 require_once("helper.php");
 
+
 //检查服务端状态
 function serverstate($cid){
     $cid = $_REQUEST("cid");
@@ -25,7 +26,7 @@ function serverstate($cid){
     $remoteRes = json_decode( $remoteRes, true);
     //halt($remoteUrl);
     if(isset($remoteRes['app_id'])){
-       success('请求成功', $remoteRes);
+       success('success', $remoteRes);
     }else{
        success('请求失败');
     }
@@ -35,22 +36,25 @@ function serverstate($cid){
 
 //异步获取图片
 function  getimg(){
-   success('请求成功', ['img'=>123456]);
+   success('success', ['img'=>123456]);
 }
 
 //生成图片[图生图]
 function generateImg()
 {
-    $sizeTag = $_POST["sizeTag"] ?? 23;
-    $scale = $_POST["scale"] ?? 7;
-    $steps = $_POST["steps"] ??  15;
-    $seed = $_POST["seed"]?? null ;
-    $prompt = $_POST["prompt"] ?? '';   
-    $genType =  $_POST["gentype"]?? 0; //生成类型：0文生图 ， 1图生图
-    $ckpic =  $_POST["ckpic"]?? '';     //参考图片base64
-    $nprompt = $_POST["nprompt"]?? "" ;
-    $sampler_name = $_POST["sampler_name"]?? "Euler a" ;
-    $useModel = $_POST["model"]?? "2D" ;       //使用的模型
+    $inputData = file_get_contents('php://input') ;     //some environments register_globals off。
+   // 将原始数据解析为 JSON 格式
+    $postdata = json_decode($inputData, true);
+    $sizeTag = $postdata["sizetag"] ?? 23;
+    $scale = $postdata["scale"] ?? 7;
+    $steps = $postdata["steps"] ??  15;
+    $seed = $postdata["seed"]?? null ;
+    $prompt = $postdata["prompt"] ?? '';   
+    $genType =  $postdata["gentype"]?? 0; //生成类型：0文生图 ， 1图生图
+    $ckpic =  $postdata["ckpic"]?? '';     //参考图片base64
+    $nprompt = $postdata["nprompt"]?? "" ;
+    $sampler_name = $postdata["sampler_name"]?? "Euler a" ;
+    $useModel = $postdata["model"]?? "2D" ;       //使用的模型
     
     $data = prepare($prompt, $nprompt, $sizeTag, $scale, $steps, $seed); //前置准备数据
     //halt($data);
@@ -59,19 +63,6 @@ function generateImg()
         $apiName = 'img2img';
     }
         
-    //用于存档生成数据
-    $data = [
-        'prompt'=>$prompt,
-        'model_type'=>$useModel,
-        'nprompt'=>$data['uc'] ,
-        'seed'=>$seed ,
-        'width'=>$data['width'] ,
-        'height'=>$data['height'] ,
-        'steps'=>6 ,
-        'scale'=>1 ,
-        'startstamp'=>time(),
-        'status'=>0,
-    ];
     ///////////////整理格式//////////////////////
     $newData['imgid'] =  time() ;   
     $newData['prompt'] = $data['prompt'];
@@ -92,10 +83,10 @@ function generateImg()
         // $newData['scale'] = 8; 
         //////////////START 高清修复///////////////////////////////
         $newData['enable_hr']  =  false;        //高清修复关闭
-        // $newData['enable_hr']  =  $_POST['hiresfix');  /////aaaa             //高清修复开启
+        // $newData['enable_hr']  =  $postdata['hiresfix');  /////aaaa             //高清修复开启
         $newData['denoising_strength']  =  0.35;      //重绘强度
         $newData['hr_second_pass_steps']  =  8;    //放大步数   8-12
-        $hr_scale = $_POST['upscale'] ?? 1.5;
+        $hr_scale = $postdata['upscale'] ?? 1.5;
         if($hr_scale > 2){
             $hr_scale =2; 
         }
@@ -111,46 +102,22 @@ function generateImg()
         $negative_prompt3 = "(nsfw),easynegative,bad_prompt_version2-neg,"; //极简主义
         // $newData['negative_prompt']  = $negative_prompt3 . $data['uc'];
         // $newData['negative_prompt']  = $negative_prompt2;
-        // $nprompt = $_POST["nprompt", "" );
-        if( $nprompt == ""){
-            $nprompt =  $negative_prompt3;
+        // $nprompt = $postdata["nprompt", "" );
+        if( $newData['negative_prompt'] == ""){
+            $newData['negative_prompt'] =  $negative_prompt3;
         }
-        $newData['negative_prompt']  = $nprompt;/////aaaa  
     }
     
-    $dataFinal = [];
-    if($genType == 0){
-        $dataFinal = $newData;
-    }
-    
-    if($genType == 1){  //图生图模式
-        //放大倍率
-        $beilv = 2;
-        $dataFinal['init_images'] = $newData['init_images'];
-        $dataFinal['sampler_name'] = $newData['sampler_name'];
-        $dataFinal['prompt'] = $newData['prompt'];
-        $dataFinal['negative_prompt'] = $newData['negative_prompt'];
-        $dataFinal['steps'] = 20;
-        $dataFinal['cfg_scale'] = $newData['cfg_scale'];
-        $dataFinal['width'] = $newData['width'] * $beilv;
-        $dataFinal['height'] = $newData['height'] * $beilv;
-        $dataFinal['save_images'] = $newData['save_images'];
-        $dataFinal['sampler_index'] = $newData['sampler_name'];
-        $dataFinal['denoising_strength'] = 0.45; //重绘幅度
-    }
-   
     $rdomain =  $GLOBALS['config']['SDServerUrl'];
     $authpass =  $GLOBALS['config']['password'];
     $remoteUrl = "{$rdomain}/sdapi/v1/{$apiName}";
-  
-    $remoteRes = doCurlPostRequest( $remoteUrl, $dataFinal, $authpass);
+    $remoteRes = doCurlPostRequest( $remoteUrl, $newData, $authpass);
     $remoteRes = json_decode( $remoteRes, true);
-    
 //   dump( $remoteRes);
     if(isset($remoteRes['images'][0])){
-       success('成功', ['img'=>$remoteRes['images'][0], 'imgid'=> $newData['imgid']] );  
+        success('success', ['img'=>$remoteRes['images'][0], 'imgid'=> $newData['imgid']] );  
     }else{
-        error('失败', ['imgid'=>$newData['imgid'] ] );
+        error('error', ['imgid'=>$newData['imgid'] ] );
     }
 }
 
@@ -296,7 +263,7 @@ function fanyinative($promptStr){
 //lora模型列表 
 function loralist(){
     $loralist = [];    //加载lora列表
-    success('请求成功', ['list'=> $loralist ]);
+    success('success', ['list'=> $loralist ]);
 }
 
 $action = $_GET['a'];

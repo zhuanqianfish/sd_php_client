@@ -21,22 +21,19 @@ function generateImg(){
         steps : $("#steps").val(),
         scale : $("#scale").val(),
         seed : $("#seed").val(),
-        sizeTag : $("#sizeTag").val(),
+        sizetag : $("#sizeTag").val(),
         hiresfix : $("#hiresfix").val() == 1? true : false,
         upscale: $("#upscale").val() ,
         sampler: $("#sampler").val()
     }
+    console.log(data);
     $("#picture").attr("src", "./img/loading.gif" )
     $.ajax({
         url: api_domain + "./sd_api.php?a=generateImg",
         type:"POST",
-        headers: {
-            "Accept" : "application/json; charset=utf-8",
-            "Content-Type": "application/json; charset=utf-8",
-            // 'Authorization': 'Basic aihelper:123456'
-        },
-        data: JSON.stringify(data) ,
         async:true,
+        contentType: 'application/json',
+        data: JSON.stringify(data) ,
         success: function(res){
             console.log(res)
             if(res.code == 1){
@@ -46,9 +43,11 @@ function generateImg(){
                 alert(res.msg)
                 $("#picture").attr("src", "/assets/Error.png" )
             }
+        },  
+        complete:function(res){
             clickFlag = false
             $("#btnGenerateImg").html("生成")
-        },  
+        }
     })
    
 }

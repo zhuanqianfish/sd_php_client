@@ -4,10 +4,16 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stable Diffusion 远程调用测试</title>
+    <title><?php echo $lang['title']; ?></title>
     <style>
         .block1{
             padding: 10px;
+        }
+        .block1 span {
+            display: inline-block;
+            min-width: 118px;
+            text-align: right;
+            padding-right: 8px;
         }
         .one-button{
             width: 180px;
@@ -15,11 +21,12 @@
             line-height: 40px;
         }
         #picBlock{
-            text-align: center;
+            /* text-align: center; */
         }
         #picture{
             margin:  0 auto;
         }
+
     </style>
 </head>
 <body>
@@ -27,43 +34,44 @@
         <!--服务器状态：<span id="serverState">检测中...</span>-->
     </div>
     <div class="block1">
-        提示词： 
+        <span><?php echo $lang['prompt']; ?>:</span>
         <textarea name="" id="prompt"   cols="30" rows="10"></textarea>
     </div>
     <div class="block1">
-        反向提示词：
+        <span><?php echo $lang['nprompt']; ?>: </span>
         <textarea name="" id="nprompt"   cols="30" rows="10"></textarea>
     </div>
     <div class="block1">
-        生成步数：<input type="text" id="steps"  placeholder="" value="15">
+        <span><?php echo $lang['steps']; ?>:</span>
+        <input type="text" id="steps"  placeholder="" value="15">
     </div>
     <div class="block1">
-        比例：<input type="text" id="sizeTag"  value="11" placeholder="" >
+        <span><?php echo $lang['proportions']; ?>:</span><input type="text" id="sizeTag"  value="11" placeholder="" >
         <div style="color: #cccccc;font-size: 0.8rem;">
-            11为方形，12为全面屏，21横屏，其他值为竖屏
+            <?php echo $lang['sizeTagDescription']; ?>
         </div>
     </div>
     <div class="block1">
-        相关度：<input type="text" id="scale"  value="7" >
+        <span><?php echo $lang['scale']; ?>:</span><input type="text" id="scale"  value="7" >
     </div>
     <div class="block1">
-        种子：<input type="text" id="seed"  value="-1" >
+        <span><?php echo $lang['seed']; ?>:</span><input type="text" id="seed"  value="-1" >
     </div>
     <div class="block1">
-        采样方法：<input type="text" id="sampler"  value="Euler a" >
+        <span><?php echo $lang['seed']; ?>:</span><input type="text" id="sampler"  value="Euler a" >
     </div>
     <div class="block1">
-        启用高清修复：<input type="text" id="hiresfix"  value="1" >
+        <span><?php echo $lang['hiresfix']; ?>:</span><input type="text" id="hiresfix"  value="1" >
     </div>
     <div class="block1">
-        高清放大倍数：<input type="text" id="upscale"  value="2" >
+        <span> <?php echo $lang['upscale']; ?>：</span><input type="text" id="upscale"  value="2" >
     </div>
-    <div  class="block1" style="text-align: center;">
+    <div  class="block1" style="padding-left: 50px;" >
         <button class="one-button" id="btnGenerateImg" type="button" onclick="generateImg()">
-            生成
+            <?php echo $lang['submit']; ?>
         </button>
     </div>
-    <div id="picBlock">
+    <div id="picBlock" tyle="padding-left: 50px;" >
         <img id="picture" style="width:512px;max-width: 80%;" src="" alt="">
     </div>
     <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>

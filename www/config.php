@@ -5,4 +5,7 @@ return $config = [
     'SDServerUrl' => 'http://192.168.3.99:7860',
     //if need auth
     'password'  =>  '',
+
+    //language
+    'lang' => 'zh-cn',
 ];
