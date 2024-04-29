@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ai助手</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;  
+        }
+        .main{
+            display: flex;
+            flex-wrap: wrap;
+            padding: 10px;
+        }
+        #top-block{
+            height: 50px;
+            width: 100%;
+            background-color: #f0f0f0;
+        }
+        #left-menu{
+            flex:0 0 200px;
+            height: 100%;
+            background-color: #f0f0f0;
+        }
+        #content{   
+            flex:1;
+            display: flex;
+        }
+        #topFunction{
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+        }
+        .top-block{
+
+        }
+        
+        .button-menu{
+    
+        }   
+       
+        .table{
+        }
+    
+    </style>
+</head>
+<body>
+    <div class="main">
+        <div id ="top-block">
+            AI助手
+        </div>
+        <div id="left-menu">
+            <ul>
+                <li>aaaa </li>
+                <li>bbb</li>
+                <li><input id="prompt" type="text"  alt="prompt"></li>
+                <li><input id="nprompt" type="text"  alt="nprompt"></li>
+                
+                <li>ddd</li>
+                <li>eee</li>
+            </ul>
+
+            <ul class="button-menu">
+                <li>aaaa </li>
+                <li>bbb</li>
+                <li>ccc</li>
+            </ul>
+        </div>
+        <div id="content">
+            <div>
+                <button id="generate" type="button">生成测试</button>
+               <img id="output" width="500" src="" alt="">
+            </div>
+            <div id="topFunction">
+                <div>
+                    111
+                </div>
+                <div>   
+                    222
+                </div>
+                <div>
+                    333
+                </div>
+            </div>
+            <div class="table">
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- jquery cdn -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- 引入js -->
+    <script src="index.js"></script>
+    <script>
+        var sd_Url  = "http://192.168.3.99:7860";
+        var txt2imgUrl = sd_Url + "/sdapi/v1/txt2img";
+        $(document).ready(function() {  
+            $('#generate').click(function() {  
+                var prompt = $('#prompt').val();  
+                // if (!prompt) {  
+                //     alert('Please enter a text prompt!');  
+                //     return;  
+                // }  
+                
+                // 假设的 Stable Diffusion API URL  
+                var apiUrl = txt2imgUrl;  
+                
+                // 使用 jQuery 的 $.ajax 方法发送 POST 请求到 API  
+                $.ajax({  
+                    url: apiUrl,  
+                    type: 'POST',  
+                    contentType: 'application/json',  
+                    data: testData,  
+                    success: function(response) {  
+                        // 假设 API 返回的是一个包含图像 URL 的对象  
+                        if (response && response.images[0]) {  
+                            $('#output').attr('src', response.images[0]);  
+                        } else {  
+                            alert('Failed to generate image.');  
+                        }  
+                    },  
+                    error: function() {  
+                        alert('Error occurred while calling the API.');  
+                    }  
+                });  
+    });  
+});
+
+
+
+var testData = {
+    "prompt": "1girl,<lora:lcm-lora-sdv1-5:1>",
+  "negative_prompt": "(nsfw),easynegative,bad_prompt_version2-neg,",
+  "styles": [
+    ""
+  ],
+  "seed": -1,
+  "subseed": -1,
+  "subseed_strength": 0,
+  "seed_resize_from_h": -1,
+  "seed_resize_from_w": -1,
+  "sampler_name": "Euler a",
+  "batch_size": 1,
+  "n_iter": 1,
+  "steps": 6,
+  "cfg_scale": 1,
+  "width": 512,
+  "height": 512,
+  "restore_faces": false,
+  "tiling": false,
+  "do_not_save_samples": false,
+  "do_not_save_grid": false,
+  "eta": 0,
+  "denoising_strength": 0,
+  "s_min_uncond": 0,
+  "s_churn": 0,
+  "s_tmax": 0,
+  "s_tmin": 0,
+  "s_noise": 0,
+  "override_settings": {},
+  "override_settings_restore_afterwards": true,
+  "refiner_checkpoint": "",
+  "refiner_switch_at": 0,
+  "disable_extra_networks": true,
+  "comments": {},
+  "enable_hr": false,
+  "firstphase_width": 0,
+  "firstphase_height": 0,
+  "hr_scale": 2,
+  "hr_upscaler": "string",
+  "hr_second_pass_steps": 0,
+  "hr_resize_x": 0,
+  "hr_resize_y": 0,
+  "hr_checkpoint_name": "",
+  "hr_sampler_name": "",
+  "hr_prompt": "",
+  "hr_negative_prompt": "",
+  "sampler_index": "Euler a",
+  "script_name": "",
+  "script_args": [],
+  "send_images": true,
+  "save_images": false,
+  "alwayson_scripts": {}
+
+
+  }  
+    </script>
+</body>
+</html>
