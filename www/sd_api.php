@@ -82,8 +82,8 @@ function generateImg()
     if($useModel=='2D' ){ 
         // $newData['scale'] = 8; 
         //////////////START 高清修复///////////////////////////////
-        $newData['enable_hr']  =  false;        //高清修复关闭
-        // $newData['enable_hr']  =  $postdata['hiresfix');  /////aaaa             //高清修复开启
+        // $newData['enable_hr']  =  false;        //高清修复关闭
+        $newData['enable_hr']  =  $postdata['hiresfix'];  /////aaaa             //高清修复开启
         $newData['denoising_strength']  =  0.35;      //重绘强度
         $newData['hr_second_pass_steps']  =  8;    //放大步数   8-12
         $hr_scale = $postdata['upscale'] ?? 1.5;
